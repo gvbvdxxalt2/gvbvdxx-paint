@@ -167,6 +167,7 @@ var pos = {
   y: 0,
 };
 var rect = null;
+var circle = null;
 var mouse = true;
 
 function radToDeg(rad) {
@@ -219,6 +220,30 @@ function betterLineto(sx, sy, x, y, thickness, color) {
       Math.round(thickness)
     );
     m += 1;
+  }
+}
+function drawCircle(
+  circleX,
+  circleY,
+  circleWidth = 1,
+  circleHeight = 1,
+  thickness = 1,
+  color = "#000000"
+) {
+  var x = circleX + circleWidth / 2;
+  var y = circleY + circleHeight / 2;
+  var angle = 0;
+  var drawX = Math.round(x + (Math.sin(degToRad(angle)) * circleWidth) / 2);
+  var drawY = Math.round(y + (Math.cos(degToRad(angle)) * circleHeight) / 2);
+  var lastX = drawX;
+  var lastY = drawY;
+  while (angle < 360) {
+    angle += 3;
+    var drawX = Math.round(x + (Math.sin(degToRad(angle)) * circleWidth) / 2);
+    var drawY = Math.round(y + (Math.cos(degToRad(angle)) * circleHeight) / 2);
+    betterLineto(lastX, lastY, drawX, drawY, thickness, color);
+    lastX = drawX;
+    lastY = drawY;
   }
 }
 
@@ -339,6 +364,14 @@ function mouseDownFunctions() {
     var data = document.createElement("img");
     data.src = paintCVS.toDataURL(0, 0, paintCVS.width, paintCVS.height);
     rect.img = data;
+  }
+  if (currentMode == "circle") {
+    circle = pos;
+    circle.width = 0;
+    circle.height = 0;
+    var data = document.createElement("img");
+    data.src = paintCVS.toDataURL(0, 0, paintCVS.width, paintCVS.height);
+    circle.img = data;
   }
   if (currentMode == "outline-rect") {
     rect = pos;
@@ -601,12 +634,43 @@ setInterval(() => {
         ctx.drawImage(rect.img, 0, 0, paintCVS.width, paintCVS.height);
         rect.width = Math.round(pos.x - rect.x);
         rect.height = Math.round(pos.y - rect.y);
+        if (isShiftDown) {
+            const dx = Math.abs(pos.x - rect.x);
+            const dy = Math.abs(pos.y - rect.y);
+            const maxDisplacement = Math.max(dx, dy);
+            rect.width = pos.x < rect.x ? -maxDisplacement : maxDisplacement;
+            rect.height = pos.y < rect.y ? -maxDisplacement : maxDisplacement;
+          }
         ctx.fillRect(
           Math.round(rect.x),
           Math.round(rect.y),
           rect.width,
           rect.height
         );
+      }
+    }
+    if (currentMode == "circle") {
+      if (down) {
+        ctx.clearRect(0, 0, paintCVS.width, paintCVS.height);
+        ctx.drawImage(circle.img, 0, 0, paintCVS.width, paintCVS.height);
+        circle.width = Math.round(pos.x - circle.x);
+        circle.height = Math.round(pos.y - circle.y);
+        if (isShiftDown) {
+          const dx = Math.abs(pos.x - circle.x);
+          const dy = Math.abs(pos.y - circle.y);
+          const maxDisplacement = Math.max(dx, dy);
+          circle.width = pos.x < circle.x ? -maxDisplacement : maxDisplacement;
+          circle.height = pos.y < circle.y ? -maxDisplacement : maxDisplacement;
+        }
+        drawCircle(
+          Math.round(circle.x),
+          Math.round(circle.y),
+          circle.width,
+          circle.height,
+          +thickness.value || 5,
+          color.value
+        );
+        outlineRectPlaced = false;
       }
     }
     if (currentMode == "outline-rect") {
@@ -985,6 +1049,9 @@ function doUndo() {
   }
 }
 document.addEventListener("keydown", (event) => {
+  if (event.key == "Shift") {
+    isShiftDown = true;
+  }
   if (false) {
     var imgd = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     var index = 0;
@@ -1035,6 +1102,11 @@ document.addEventListener("keydown", (event) => {
     }
     event.preventDefault();
     }*/
+});
+document.addEventListener("keyup", (event) => {
+  if (event.key == "Shift") {
+    isShiftDown = false;
+  }
 });
 window.addEventListener("copy", (event) => {
   if (movePos2.action == 2) {
