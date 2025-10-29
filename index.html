@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      Gvbvdxx Paint - A free, better version of MS Paint, with a working
+      transparent canvas.
+    </title>
+    <link rel="icon" href="favicon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+  </head>
+  <body style="background: #8c8c8c; font-family: arial">
+    <style>
+      #menu-bar {
+        background: #adadad;
+        top: 0;
+        left: 0;
+        position: fixed;
+        width: 100vw;
+        height: 32px;
+      }
+      #paint-options {
+        background: #a3a3a3;
+        top: 32px;
+        left: 0;
+        position: fixed;
+        width: 200px;
+        height: calc(100vh);
+        overflow: scroll;
+      }
+      #paint-canvas {
+        background-image: url("transparent.png");
+        image-rendering: pixelated;
+        background-size: 32px 32px;
+      }
+      #paint-area {
+        position: fixed;
+        top: 32px;
+        left: 200px;
+        overflow: scroll;
+        width: calc(100vw - 200px);
+        height: calc(100vh - 30px);
+      }
+      .paint-button-1 {
+        background: #cccccc;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .paint-button-1:hover {
+        background: #b8b6b6;
+      }
+      .paint-input-1 {
+        background: #cccccc;
+        border: none;
+        border-radius: 5px;
+        outline: none;
+      }
+      .paint-input-1:focus {
+        background: #b8b6b6;
+      }
+      .menu-button {
+        height: 32px;
+        cursor: pointer;
+        background: #adadad;
+        border: none;
+      }
+      .menu-button:hover {
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+    <div id="menu-bar" style="display: flex; line-height: 32px">
+      <img src="logo.svg?n=1" height="32" />
+      <b>Gvbvdxx Paint:</b>
+      <button class="menu-button" id="newButton">New</button>
+      <button class="menu-button" id="save">Save</button>
+      <button class="menu-button" id="load-image">Load</button>
+    </div>
+    <div id="paint-options">
+      <button class="paint-button-1" onclick="changeMode('move2')">
+        <img width="32" height="32" src="src/move2.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('move')">
+        <img width="32" height="32" src="src/move.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('brush')">
+        <img width="32" height="32" src="src/brush.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('rect')">
+        <img width="32" height="32" src="src/rectangle.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('outline-rect')">
+        <img width="32" height="32" src="src/outline-rectangle.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('line')">
+        <img width="32" height="32" src="src/line.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('text')">
+        <img width="32" height="32" src="src/text.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('fill')">
+        <img width="32" height="32" src="src/fill.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('spray')">
+        <img width="32" height="32" src="src/spray.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('erase')">
+        <img width="32" height="32" src="src/eraser.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('get color')">
+        <img width="32" height="32" src="src/takecolor.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('lighten')">
+        <img width="32" height="32" src="src/lighten.svg?n=1" />
+      </button>
+      <button class="paint-button-1" onclick="changeMode('darken')">
+        <img width="32" height="32" src="src/darken.svg?n=1" />
+      </button>
+      <hr />
+      <span id="MODE"></span>
+      <hr />
+      <h3>Drawing properties</h3>
+      <small id="selectInfo"></small>
+      <!--<div hidden>-->
+      <label>Zoom:</label
+      ><input
+        id="zoom"
+        type="range"
+        min="0"
+        max="500"
+        value="100"
+        class="paint-input-1"
+      /><br />
+      <!--</div>-->
+      <label>Size:</label
+      ><input
+        id="thickness"
+        type="range"
+        min="1"
+        max="100"
+        value="5"
+        class="paint-input-1"
+      /><br />
+      <label>Color:</label
+      ><input id="color" type="color" class="paint-input-1" /><br />
+      <label>Transparent Fill Color:</label
+      ><input id="transparent" type="checkbox" class="paint-input-1" /><br />
+      <label>Dot brush:</label
+      ><input id="dot" type="checkbox" class="paint-input-1" /><br />
+      <label>Text (value):</label
+      ><input
+        id="textValue"
+        type="text"
+        style="width: 90px"
+        class="paint-input-1"
+      />
+      <hr />
+      <h3>Canvas Properties</h3>
+      <label>Width:</label
+      ><input
+        id="width"
+        class="paint-input-1"
+        type="number"
+        min="0"
+        max="5000"
+        value="600"
+      /><br />
+      <label>Height:</label
+      ><input
+        id="height"
+        class="paint-input-1"
+        type="number"
+        min="0"
+        max="5000"
+        value="360"
+      /><br />
+      <hr />
+      <h3>Other</h3>
+      <button class="paint-button-1" id="erase">Erase all</button>
+      <button class="paint-button-1" id="undoButton">Undo</button>
+    </div>
+    <div id="paint-area">
+      <canvas id="paint-canvas" width="600" height="360"></canvas>
+    </div>
+    <script>
+      var shownPrompt = false;
+      var deferredPrompt = null;
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        deferredPrompt.prompt();
+      });
+      window.addEventListener("mousedown", () => {
+        if (deferredPrompt && !shownPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt = null;
+          shownPrompt = true;
+        }
+      });
+    </script>
+    <script src="index.js?n=1"></script>
+    <script src="online.js?n=1"></script>
+  </body>
+</html>

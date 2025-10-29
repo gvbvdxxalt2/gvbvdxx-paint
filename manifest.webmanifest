@@ -1,0 +1,17 @@
+{
+    "background_color": "#adadad",
+    "description": "Online paint editor. Supports ransparent, and image copy and paste functions",
+    "display": "standalone",
+    "icons": [
+		{
+            "sizes": "256x256",
+            "src": "favicon.png",
+            "type": "image/png"
+        }
+    ],
+    "name": "Gvbvdxx Paint",
+    "short_name": "Gvbvdxx Paint",
+    "start_url": "/",
+    "theme_color": "#adadad",
+	  "version": 2.0
+}
