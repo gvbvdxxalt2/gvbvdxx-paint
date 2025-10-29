@@ -22,6 +22,7 @@ var redoData = [];
 var movePos2 = {
   action: -1,
 };
+var isShiftDown = false;
 modeB.innerHTML = "brush";
 ctx.imageSmoothingEnabled = false;
 
